@@ -1,6 +1,7 @@
 import io, zipfile, os
 
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login
 from django.contrib.auth.models import Group
@@ -9,8 +10,8 @@ from django.utils import timezone
 from django.db.models import IntegerField, Value
 from django.db.models.functions import Cast, Coalesce
 
-from .forms import SignUpForm, ResumeUploadForm
-from .models import Resume, Profile
+from .forms import *
+from .models import *
 from .utils import current_class_year_choices
 
 def is_board(user):
@@ -130,3 +131,60 @@ def board_download_zip(request):
 
     memory_file.seek(0)
     return FileResponse(memory_file, as_attachment=True, filename="resume_book.zip")
+
+@user_passes_test(is_board)
+def board_group_manage(request):
+    # Ensure the 'Board' group exists
+    board_group, _ = Group.objects.get_or_create(name='Board')
+
+    # Current board members (ordered nicely)
+    board_users = (
+        User.objects.filter(groups__name='Board')
+        .order_by('last_name', 'first_name', 'email')
+    )
+
+    add_form = AddBoardMemberForm(request.POST or None)
+
+    if request.method == "POST":
+        # Add a user to board by email
+        if "action_add" in request.POST and add_form.is_valid():
+            email = add_form.cleaned_data["email"].strip().lower()
+            try:
+                user = User.objects.get(email__iexact=email)
+            except User.DoesNotExist:
+                messages.error(request, f"No user with email {email} was found.")
+                return redirect("board_group_manage")
+
+            # Already in group?
+            if user.groups.filter(name='Board').exists():
+                messages.info(request, f"{user.get_full_name() or user.email} is already on the Board.")
+            else:
+                user.groups.add(board_group)
+                user.save()
+                messages.success(request, f"Added {user.get_full_name() or user.email} to the Board group.")
+
+            return redirect("board_group_manage")
+
+        # Remove a user from board by id (button next to each row)
+        if "action_remove" in request.POST:
+            uid = request.POST.get("user_id")
+            try:
+                user = User.objects.get(pk=uid)
+            except User.DoesNotExist:
+                messages.error(request, "User not found.")
+                return redirect("board_group_manage")
+
+            if user == request.user:
+                messages.error(request, "You cannot remove yourself from the Board.")
+                return redirect("board_group_manage")
+
+            user.groups.remove(board_group)
+            user.save()
+            messages.warning(request, f"Removed {user.get_full_name() or user.email} from the Board group.")
+            return redirect("board_group_manage")
+
+    return render(
+        request,
+        "app/board_group_manage.html",
+        {"board_users": board_users, "add_form": add_form}
+    )

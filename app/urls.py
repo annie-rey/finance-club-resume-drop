@@ -15,4 +15,5 @@ urlpatterns = [
     # Board pages
     path("board/", views.board_list, name="board_list"),
     path("board/book.zip", views.board_download_zip, name="board_download_zip"),
+    path("board/manage/", views.board_group_manage, name="board_group_manage")
 ]

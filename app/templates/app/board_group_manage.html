@@ -1,0 +1,55 @@
+{% extends "app/base.html" %}
+{% block title %}Board Tools — Manage Board Group{% endblock %}
+{% block page_heading %}Board Tools — Manage Board Group{% endblock %}
+
+{% block content %}
+<div class="card">
+    {% if messages %}
+    <ul style="padding-left: 18px;">
+      {% for message in messages %}
+      <li style="color:{% if 'success' in message.tags %}green{% elif 'error' in message.tags %}crimson{% elif 'warning' in message.tags %}darkorange{% else %}#333{% endif %};">
+      {{ message }}
+      </li>
+      {% endfor %}
+    </ul>
+    <hr>
+  {% endif %}
+
+  <h3>Add a User to Board</h3>
+  <form method="post" style="margin-bottom: 16px;">
+    {% csrf_token %}
+    {{ add_form.non_field_errors }}
+    <div>
+      {{ add_form.email.label_tag }}<br>
+      {{ add_form.email }}
+      {{ add_form.email.errors }}
+    </div>
+    <div style="margin-top:10px;">
+      <button class="btn" type="submit" name="action_add" value="1">Add to Board</button>
+    </div>
+  </form>
+
+  <hr>
+
+  <h3>Current Board Members</h3>
+  {% if board_users %}
+    <ul>
+      {% for u in board_users %}
+        <li style="display:flex; align-items:center; gap:10px; margin:6px 0;">
+          <div style="flex:1;">
+            <strong>{{ u.last_name }}, {{ u.first_name }}</strong>
+            <span style="color:#6b7280;">&lt;{{ u.email }}&gt;</span>
+          </div>
+          <form method="post" onsubmit="return confirm('Remove {{ u.get_full_name|default:u.email }} from Board?');">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ u.id }}">
+            <button class="btn" type="submit" name="action_remove" value="1">Remove</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p><em>No users are currently in the Board group.</em></p>
+  {% endif %}
+</div>
+{% endblock %}

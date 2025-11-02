@@ -116,8 +116,11 @@
       <div class="section">Board-Only</div>
       <ul class="nav">
         {% url 'board_list' as url_board %}
+        {% url 'board_group_manage' as url_board_manage %}
         <li><a href="{{ url_board }}" class="{% if request.path == url_board %}active{% endif %}">Dashboard</a></li>
+        <li><a href="{{ url_board_manage }}" class="{% if request.path == url_board_manage %}active{% endif %}">Manage Board Group</a></li>
       </ul>
+      
 
       <div class="footnote">
         {% if request.user.is_authenticated %}

@@ -68,3 +68,9 @@ class ResumeUploadForm(forms.Form):
             raise forms.ValidationError("File size must be under 10MB.")
         
         return f
+    
+class AddBoardMemberForm(forms.Form):
+    email = forms.EmailField(
+        label="User Email",
+        help_text="Enter the email of the user to add to the Board group."
+    )
