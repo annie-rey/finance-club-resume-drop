@@ -1,0 +1,41 @@
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Log In</h2>
+
+  {% if form.errors %}
+    <p style="color: red;">Incorrect email or password. Please try again.</p>
+  {% endif %}
+
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+
+    <p>
+      <label for="id_username">Email</label><br>
+      <input type="text" name="username" id="id_username" required autofocus>
+    </p>
+
+    <p>
+      <label for="id_password">Password</label><br>
+      <input type="password" name="password" id="id_password" required>
+    </p>
+
+    {# Support redirecting back if ?next=/protected-page #}
+    {% if next %}
+      <input type="hidden" name="next" value="{{ next }}">
+    {% endif %}
+
+    <button type="submit" class="btn">Log In</button>
+  </form>
+
+  <p style="margin-top: 10px;">
+    <a href="{% url 'password_reset' %}">Forgot password?</a>
+  </p>
+
+  <p>
+    Don’t have an account?
+    <a href="{% url 'signup' %}">Sign up</a>
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "app/base.html" %}
+{% block title %}Home • Resume Drop{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Welcome to the Resume Drop</h1>
+
+  {% if user.is_authenticated %}
+    <p>Hi {{ user.first_name|default:user.get_username }}!</p>
+
+    <p>
+      <a class="btn" href="{% url 'my_resume' %}">View My Resume</a>
+      <a class="btn" href="{% url 'upload_resume' %}">Upload / Replace Resume</a>
+
+      <a class="btn" href="{% url 'board_list' %}">Board Dashboard</a>
+    </p>
+
+    <!-- ✅ Logout button -->
+    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" class="btn">Log Out</button>
+    </form>
+
+  {% else %}
+    <p>Please log in or create an account to upload your resume.</p>
+
+    <p>
+      <a class="btn" href="{% url 'login' %}">Log In</a>
+      <a class="btn" href="{% url 'signup' %}">Sign Up</a>
+    </p>
+  {% endif %}
+</div>
+{% endblock %}

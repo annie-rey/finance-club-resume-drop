@@ -1,0 +1,13 @@
+{% extends "app/base.html" %}
+{% block content %}
+<div class="card">
+  <h2>Your Resume</h2>
+  {% if resume and resume.file %}
+    <p>Last updated: {{ resume.updated_at }}</p>
+    <p><a class="btn" href="{{ resume.file.url }}" target="_blank">View/Download</a></p>
+  {% else %}
+    <p>No resume on file.</p>
+  {% endif %}
+  <p><a class="btn" href="{% url 'upload_resume' %}">Upload/Replace</a></p>
+</div>
+{% endblock %}

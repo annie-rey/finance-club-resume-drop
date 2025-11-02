@@ -1,0 +1,15 @@
+{% extends "app/base.html" %}
+{% block content %}
+<div class="card">
+  <h2>Board — All Resumes</h2>
+  <p><a class="btn" href="{% url 'board_download_zip' %}">Download ZIP (resume_book.zip)</a></p>
+  <ul>
+    {% for r in resumes %}
+      <li>
+        {{ r.user.last_name }}, {{ r.user.first_name }}
+        {% if r.file %} — updated {{ r.updated_at }}{% else %} — <em>No file</em>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

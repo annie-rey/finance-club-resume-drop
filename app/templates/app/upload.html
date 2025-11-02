@@ -1,0 +1,31 @@
+{% extends "app/base.html" %}
+
+{% block title %}Upload Resume{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Upload / Replace Your Resume</h2>
+
+    <p>Please upload your resume as a PDF. This will replace any previous upload.</p>
+
+   <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <!-- Render the field explicitly (or use {{ form.as_p }}) -->
+    <p>
+      {{ form.resume.label_tag }}
+      {{ form.resume }}
+      {{ form.resume.errors }}
+    </p>
+
+        <br>
+
+        <button type="submit">Upload Resume</button>
+    </form>
+
+    <br>
+
+    <a href="{% url 'my_resume' %}">Back to My Resume</a>
+</div>
+{% endblock %}
