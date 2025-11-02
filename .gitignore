@@ -1,6 +1,10 @@
 #folder where the resumes go
 resumes/
 
+#profiles and logo graphic
+app/migrations/
+app/static/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
