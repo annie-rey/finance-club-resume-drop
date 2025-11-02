@@ -123,10 +123,11 @@ def board_download_zip(request):
             if not os.path.exists(abs_path):
                 continue
             user = resume.user
-            cy = getattr(user.profile, "class_year", "Unknown")
-            base = os.path.basename(abs_path)
+            cy = getattr(user.profile, "class_year", "")
+            last = (user.last_name or "Last").strip().replace(" ", "_").title()
+            first = (user.first_name or "First").strip().replace(" ", "_").title()
             # Include class year in filename for clarity
-            arcname = f"{cy}_{base}"
+            arcname = f"{cy}_{last}_{first}_Resume.pdf"
             zipf.write(abs_path, arcname)
 
     memory_file.seek(0)
