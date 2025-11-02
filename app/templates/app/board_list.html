@@ -2,14 +2,99 @@
 {% block content %}
 <div class="card">
   <h2>Board — All Resumes</h2>
-  <p><a class="btn" href="{% url 'board_download_zip' %}">Download ZIP (resume_book.zip)</a></p>
-  <ul>
-    {% for r in resumes %}
-      <li>
-        {{ r.user.last_name }}, {{ r.user.first_name }}
-        {% if r.file %} — updated {{ r.updated_at }}{% else %} — <em>No file</em>{% endif %}
-      </li>
-    {% endfor %}
-  </ul>
+
+  <!-- Year Filter -->
+  <form id="yearFilterForm" method="get" action="{% url 'board_list' %}">
+    <fieldset style="margin-bottom: 8px;">
+      <legend><strong>Filter by Class Year</strong></legend>
+
+      <!-- Buttons -->
+      <div style="margin: 6px 0;">
+        <button type="button" class="btn" id="btnSelectActive">Select All Active Years</button>
+        <button type="button" class="btn" id="btnSelectAll">Select All</button>
+        <button type="button" class="btn" id="btnClear">Clear</button>
+      </div>
+
+      <!-- Checkboxes -->
+      <div id="yearCheckboxes" style="display:flex; gap:12px; flex-wrap:wrap;">
+        {% for y in years_all %}
+          <label style="display:inline-flex; gap:6px; align-items:center;">
+            <input type="checkbox" name="years" value="{{ y }}" {% if y in selected_years %}checked{% endif %}>
+            {{ y }}
+          </label>
+        {% empty %}
+          <em>No class years found.</em>
+        {% endfor %}
+      </div>
+
+      <!-- Actions -->
+      <div style="margin-top: 10px; display:flex; gap:8px;">
+        <button type="submit" class="btn">Apply Filter</button>
+        <button type="button" class="btn" id="btnDownloadZip">Download ZIP</button>
+      </div>
+
+      <!-- Active years (for JS) -->
+      <input type="hidden" id="activeYearsCSV" value="{{ years_active|join:',' }}">
+    </fieldset>
+  </form>
+
+  <!-- Grouped list -->
+  {% regroup resumes by user.profile.class_year as class_groups %}
+
+  {% for group in class_groups %}
+    <h3>Class of {{ group.grouper|default:"Unspecified" }}:</h3>
+    <ul>
+      {% for r in group.list %}
+        <li>
+          {{ r.user.last_name }}, {{ r.user.first_name }}
+          {% if r.file %}
+            (updated {{ r.updated_at|date:"M j, Y" }})
+          {% else %}
+            — <em>No file</em>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+    {% if not forloop.last %}<br>{% endif %}
+  {% endfor %}
 </div>
+
+<script>
+  (function() {
+    const form = document.getElementById('yearFilterForm');
+    const activeYears = (document.getElementById('activeYearsCSV').value || '').split(',').filter(Boolean);
+    const checkboxes = Array.from(form.querySelectorAll('input[type="checkbox"][name="years"]'));
+
+    function setChecked(predicate) {
+      checkboxes.forEach(cb => cb.checked = predicate(cb.value));
+    }
+
+    document.getElementById('btnSelectActive').addEventListener('click', function() {
+      setChecked(v => activeYears.includes(v));
+    });
+
+    document.getElementById('btnSelectAll').addEventListener('click', function() {
+      setChecked(() => true);
+    });
+
+    document.getElementById('btnClear').addEventListener('click', function() {
+      setChecked(() => false);
+    });
+
+    // Download ZIP with same selected years
+    document.getElementById('btnDownloadZip').addEventListener('click', function() {
+      // Build querystring from current form selections
+      const params = new URLSearchParams();
+      checkboxes.filter(cb => cb.checked).forEach(cb => params.append('years', cb.value));
+
+      // If nothing selected, default to active years (same as view default)
+      if (![...params.keys()].length) {
+        activeYears.forEach(y => params.append('years', y));
+      }
+
+      const url = "{% url 'board_download_zip' %}" + (params.toString() ? ("?" + params.toString()) : "");
+      window.location.href = url;
+    });
+  })();
+</script>
 {% endblock %}

@@ -8,8 +8,8 @@ def resume_upload_path(instance, filename):
     user = instance.user
     
     # Get name fields from user
-    last = (user.last_name or "Last").strip().replace(" ", "_")
-    first = (user.first_name or "First").strip().replace(" ", "_")
+    last = (user.last_name or "Last").strip().replace(" ", "_").title()
+    first = (user.first_name or "First").strip().replace(" ", "_").title()
     
     filename = f"{last}_{first}_Resume.pdf"
     return f"resumes/{user.id}/{filename}"
@@ -21,3 +21,7 @@ class Resume(models.Model):
 
     def __str__(self):
         return f"{self.user.get_full_name()} Resume"
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    class_year = models.CharField(max_length=4)
