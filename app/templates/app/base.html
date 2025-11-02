@@ -1,1 +1,151 @@
-{% block content %}{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}RIG Resume Drop{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {% block extra_head %}{% endblock %}
+
+  <style>
+    :root{
+        --bg:#7b1113;        /* maroon */
+        --bg2:#5d0c0e;       /* darker maroon hover */
+        --fg:#f8fafc;        /* light text */
+        --muted:#e5e7eb99;   /* muted text */
+        --accent:#ffd166;    /* accent (gold-ish) */
+        --card:#ffffff;      /* content bg */
+        --border:#e5e7eb;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+      background:#f8fafc; color:#111827;
+      display:flex; min-height:100vh;
+    }
+    /* Sidebar */
+    .sidebar{
+      width:280px; background:var(--bg); color:var(--fg);
+      padding:20px 16px; position:sticky; top:0; height:100vh; overflow:auto;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; margin-bottom:18px;
+    }
+    .brand img{
+      width:44px; height:44px; object-fit:contain; border-radius:8px; background:#fff;
+    }
+    .brand .title{ font-weight:700; line-height:1.1; }
+    .brand .subtitle{ font-size:12px; color:var(--muted); margin-top:2px; letter-spacing:0.02em;}
+    nav .section{
+      margin-top:18px; font-size:12px; text-transform:uppercase; color:var(--muted); letter-spacing:.06em;
+    }
+    ul.nav{ list-style:none; padding:8px 0 0 0; margin:0; }
+    ul.nav li a{
+      display:block; color:var(--fg); text-decoration:none;
+      padding:10px 12px; border-radius:10px; margin:3px 0; font-weight:500;
+    }
+    ul.nav li a:hover{ background:var(--bg2); }
+    ul.nav li a.active{ background:rgba(96,165,250,.15); color:var(--accent); }
+    .footnote{
+      margin-top:24px; font-size:12px; color:var(--muted);
+      border-top:1px solid #1f2937; padding-top:12px;
+    }
+    /* Main content */
+    .main{
+      flex:1; padding:28px;
+      display:flex; justify-content:center;
+    }
+    .container{
+      width:min(1100px, 100%); 
+    }
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:14px;
+      padding:18px 18px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .topbar{
+      display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;
+    }
+    .userbox{
+      font-size:14px; color:#374151;
+    }
+    .btn-link{
+      color:#2563eb; text-decoration:none; font-weight:600;
+    }
+    /* Mobile */
+    @media (max-width: 900px){
+      .sidebar{ position:fixed; left:-290px; transition:left .2s ease-in-out; z-index:50; }
+      .sidebar.open{ left:0; }
+      .main{ padding:16px; }
+      .topbar{ gap:8px; }
+      .menu-btn{
+        display:inline-flex; align-items:center; justify-content:center;
+        padding:8px 10px; border:1px solid var(--border); border-radius:8px; background:#fff;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <!-- Replace with your real static path/logo -->
+      <img src="{% static 'app/img/rig-logo.png' %}" alt="RIG Logo" />
+      <div>
+        <div class="title">RIG Resume Drop</div>
+        <div class="subtitle">University of Chicago</div>
+      </div>
+    </div>
+
+    <nav>
+      <div class="section">Home</div>
+      <ul class="nav">
+        {% url 'index' as url_index %}
+        <li><a href="{{ url_index }}" class="{% if request.path == url_index %}active{% endif %}">Home</a></li>
+      </ul>
+
+      <div class="section">Member Pages</div>
+      <ul class="nav">
+        {% url 'my_resume' as url_my_resume %}
+        {% url 'upload_resume' as url_upload %}
+        <li><a href="{{ url_my_resume }}" class="{% if request.path == url_my_resume %}active{% endif %}">My Resume</a></li>
+        <li><a href="{{ url_upload }}" class="{% if request.path == url_upload %}active{% endif %}">Upload Resume</a></li>
+      </ul>
+
+      <div class="section">Board-Only</div>
+      <ul class="nav">
+        {% url 'board_list' as url_board %}
+        <li><a href="{{ url_board }}" class="{% if request.path == url_board %}active{% endif %}">Dashboard</a></li>
+      </ul>
+
+      <div class="footnote">
+        {% if request.user.is_authenticated %}
+          Signed in as <strong>{{ request.user.first_name|default:request.user.username }}</strong>.<br>
+          <a class="btn-link" href="{% url 'logout' %}?next={{ request.path }}">Log out</a>
+        {% else %}
+          <a class="btn-link" href="{% url 'login' %}?next={{ request.path }}">Log in</a> ·
+          <a class="btn-link" href="{% url 'signup' %}">Sign up</a>
+        {% endif %}
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="container">
+      <div class="topbar">
+        <h1 style="margin:0;">{% block page_heading %}{% endblock %}</h1>
+      </div>
+
+      {% block content %}
+      <div class="card">
+        <p>Content goes here.</p>
+      </div>
+      {% endblock %}
+    </div>
+  </main>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>
