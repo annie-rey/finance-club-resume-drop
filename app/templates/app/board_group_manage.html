@@ -7,7 +7,7 @@
     {% if messages %}
     <ul style="padding-left: 18px;">
       {% for message in messages %}
-      <li style="color:{% if 'success' in message.tags %}green{% elif 'error' in message.tags %}crimson{% elif 'warning' in message.tags %}darkorange{% else %}#333{% endif %};">
+      <li style="color:{% if 'error' in message.tags %}crimson{% else %}green{% endif %};">
       {{ message }}
       </li>
       {% endfor %}
