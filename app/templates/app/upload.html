@@ -12,7 +12,6 @@
     {% csrf_token %}
     {{ form.non_field_errors }}
 
-    <!-- Render the field explicitly (or use {{ form.as_p }}) -->
     <p>
       {{ form.resume.label_tag }}
       {{ form.resume }}
