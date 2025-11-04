@@ -125,9 +125,9 @@
       <div class="footnote">
         {% if request.user.is_authenticated %}
           Signed in as <strong>{{ request.user.first_name|default:request.user.username }}</strong>.<br>
-          <a class="btn-link" href="{% url 'logout' %}?next={{ request.path }}">Log out</a>
+          <a class="btn-link" href="{% url 'logout' %}">Log out</a>
         {% else %}
-          <a class="btn-link" href="{% url 'login' %}?next={{ request.path }}">Log in</a> ·
+          <a class="btn-link" href="{% url 'login' %}">Log in</a> ·
           <a class="btn-link" href="{% url 'signup' %}">Sign up</a>
         {% endif %}
       </div>
