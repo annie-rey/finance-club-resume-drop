@@ -125,7 +125,10 @@
       <div class="footnote">
         {% if request.user.is_authenticated %}
           Signed in as <strong>{{ request.user.first_name|default:request.user.username }}</strong>.<br>
-          <a class="btn-link" href="{% url 'logout' %}">Log out</a>
+          <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <a class="btn-link" href="{% url 'logout' %}">Log out</a>
+          </form>
         {% else %}
           <a class="btn-link" href="{% url 'login' %}">Log in</a> ·
           <a class="btn-link" href="{% url 'signup' %}">Sign up</a>
