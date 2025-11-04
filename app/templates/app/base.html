@@ -127,7 +127,7 @@
           Signed in as <strong>{{ request.user.first_name|default:request.user.username }}</strong>.<br>
           <form method="post" action="{% url 'logout' %}" style="display:inline;">
             {% csrf_token %}
-            <a class="btn" href="{% url 'logout' %}">Log out</a>
+            <button type="submit" class="btn">Log Out</button>
           </form>
         {% else %}
           <a class="btn-link" href="{% url 'login' %}">Log in</a> ·
